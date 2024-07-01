@@ -27,8 +27,9 @@ Multer: Middleware for handling file uploads.
 
 CSS: Basic styling for the user interface.
 
+---
 
-## Use Cases:
+## Use Cases : 
 ### File Distribution and Sharing:
 
 Scenario: Organizations or individuals need to distribute files securely and efficiently.
