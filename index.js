@@ -1,41 +1,45 @@
-const express = require("express");
-const multer = require("multer");
-const ejs = require("ejs");
-
+const express = require('express');
+const path = require('path');
+const multer = require('multer');
 const app = express();
+const PORT =  3000;
 
-const PORT = 3000;
+app.set('view engine', 'ejs');
 
-app.set("view engine", "ejs");
+//When you add express.static, you're telling Express to serve static files (like images, CSS files, or uploaded files) from a specified directory. Here’s what this line of code does:
 
-//  const upload = multer({dest:"upload/"}) // this si middleware
+
+app.use('/upload', express.static(path.join(__dirname, 'upload')));
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cal_bk) {
+    destination: function (req, file, cb) {
+        cb(null, 'upload');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage: storage });
 
-   return cal_bk(null ,'./upload')
-
-  },
-
-  filename: function (req, file, cal_bk) {
-    return cal_bk (null , `${Date.now()}-- ${file.originalname}`)
-
-  },
+// Route to display the upload form
+app.get('/', (req, res) => {
+    res.render('upload');
 });
 
-const upload = multer({storage})
-
-app.get("/", (req, res) => {
-  res.render("upload");
+// Route to handle file upload and generate shareable link
+app.post('/upload', upload.single('fileuploader'), (req, res) => {
+  const fileName = req.file.filename;
+  const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
+    res.render('link', { downloadUrl });
 });
 
-app.post("/upload", upload.single("fileuploader"), (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-
-  return res.redirect("/");
+// Route to display the download page
+app.get('/download/:fileName', (req, res) => {
+    const fileName = req.params.fileName;
+    const fileUrl = `/upload/${fileName}`;
+    res.render('download', { fileUrl });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
