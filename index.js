@@ -1,68 +1,48 @@
-
-
-
-
-
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-
+const multer = require('multer');
+require('dotenv').config(); // Load environment variables
 const app = express();
-const uploadDir = path.join(__dirname, 'public', 'uploads');
 
-// Create uploads directory if it doesn't exist
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const PORT = process.env.PORT ; // Use environment variable or default to 3000
 
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
 
-// Ensure 'uploads' directory exists within 'public'
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
+//When you add express.static, you're telling Express to serve static files (like images, CSS files, or uploaded files) from a specified directory. Here’s what this line of code does:
 
-// Configure multer for handling file uploads
+app.use(express.static(path.join(__dirname, 'public'))); // for css
+
+app.use('/upload', express.static(path.join(__dirname, 'upload')));
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/uploads'); // Destination folder for uploads
+        cb(null, 'upload');
     },
     filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`); // Rename file to avoid conflicts
+        cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
 const upload = multer({ storage: storage });
 
 // Route to display the upload form
 app.get('/', (req, res) => {
-    res.render('upload'); // Renders 'upload.ejs' from the 'views' directory
+    res.render('upload');
 });
 
-// Route to handle file uploads and generate a shareable link
-app.post('/upload', upload.single('file'), (req, res) => {
-    const fileName = req.file.filename;
-    const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
-    res.render('link', { downloadUrl }); // Renders 'link.ejs' with the download URL
+// Route to handle file upload and generate shareable link
+app.post('/upload', upload.single('fileuploader'), (req, res) => {
+  const fileName = req.file.filename;
+  const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
+    res.render('link', { downloadUrl });
 });
 
-// Route to handle file downloads
+// Route to display the download page
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
-    const filePath = path.join(__dirname, 'public', 'uploads', fileName);
-
-    // Check if the file exists
-    if (fs.existsSync(filePath)) {
-        res.download(filePath, fileName); // Download the file
-    } else {
-        res.status(404).send('File not found'); // Handle file not found
-    }
-});
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+    const fileUrl = `/upload/${fileName}`;
+    res.render('download', { fileUrl });
 });
 
-
-
-
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
