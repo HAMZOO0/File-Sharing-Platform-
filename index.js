@@ -1,20 +1,22 @@
-// Import required modules
+
+
+
+
+
 const express = require('express');
-const path = require('path');
-const multer = require('multer');
 const fs = require('fs');
-require('dotenv').config();
+const path = require('path');
 
-// Create an Express application
 const app = express();
-const PORT = process.env.PORT || 3000; // Use PORT from environment or default to 3000
+const uploadDir = path.join(__dirname, 'public', 'uploads');
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-// Set EJS as the templating engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
 
 // Ensure 'uploads' directory exists within 'public'
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
@@ -57,8 +59,10 @@ app.get('/download/:fileName', (req, res) => {
         res.status(404).send('File not found'); // Handle file not found
     }
 });
-
-// Start the server and listen on the specified port
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
+
+
+
+
