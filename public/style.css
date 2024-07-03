@@ -1,0 +1,75 @@
+/*  here i am using Bulma  Css framework  */
+@import "https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css";
+
+
+body {
+    background-color: rgba(18, 68, 79, 0.273);
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+}
+
+form {
+    margin: 20px 0;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+a {
+    color: #007BFF;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+form
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.buttons
+{
+    
+        position: relative;
+        left: -11pc;
+
+        top: 44px;
+
+}
+
+.button is-primary
+{
+
+   background-color: red; 
+}
+
+.navbar-start{
+    padding-left: 5rem;
+    display: flex;
+    gap: 10px;
+
+}
+img{
+
+    width: 66px;
+
+}

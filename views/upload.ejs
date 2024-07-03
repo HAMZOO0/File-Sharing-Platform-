@@ -3,14 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Sharing </title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <form action="/upload" method="post" , enctype="multipart/form-data">
-        <input type="file" , name="fileuploader">
-        <button type="submit">Upload</button>
+    <title>File Sharing</title>
+    <!-- <link rel="stylesheet" href="/style.css"> -->
+    <link rel="stylesheet" href="/public/style.css">
+    <!-- Link FontAwesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
+    <link rel="icon" type="image/x-icon" href="/Smart-House-Phone--Streamline-Ultimate.png" >
+
+</head>
+
+
+
+  
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="https://github.com/HAMZOO0/File-Sharing-Platform-"> Documentation  </a>
+        <div class="navbar-item has-dropdown is-active">
+        
+            <a class="navbar-item" href="https://www.linkedin.com/in/hamza-sajid-developer/"> Developer  </a>
+       
+        </div>
+      </div>
+  
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="field is-grouped">
+            <p class="control">
+              
+            </p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+</header>
+
+
+
+<body>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="file is-info has-name">
+            <label class="file-label">
+                <input class="file-input" type="file" name="fileuploader" onchange="displayFileName(this)" />
+                <span class="file-cta">
+                    <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label">Choose a File…</span>
+                </span>
+                <span class="file-name">No file chosen</span>
+            </label>
+        </div>
+        <hr>
+        <div class="buttons">
+
+          <button class="button is-primary" type="submit" style="
+          background-color: #00BCD4; ">Upload</button>      
+            </div>
     </form>
+    
+  
+  
+
+    <script>
+        function displayFileName(input) {
+            if (input.files.length > 0) {
+                const fileName = input.files[0].name; // Get the file name
+                const fileLabel = input.parentNode.querySelector('.file-name'); // Find the file-name span
+
+                if (fileLabel) { // Ensure fileLabel is found
+                    fileLabel.textContent = fileName; // Update the file name display
+                } else {
+                    console.error('File name span not found.'); // Log an error if fileLabel is not found
+                }
+            }
+        }
+    </script>
 </body>
 </html>
