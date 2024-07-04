@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const os = require('os');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -15,7 +16,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Determine upload directory based on environment
-const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : 'upload';
+const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : path.join(__dirname, 'upload');
+
+// Ensure the upload directory exists
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -48,7 +54,7 @@ app.post('/upload', upload.single('fileuploader'), (req, res) => {
 
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
-    const fileUrl = `${uploadDir}/${fileName}`;
+    const fileUrl = path.join(uploadDir, fileName);
     res.download(fileUrl);
 });
 
