@@ -15,6 +15,15 @@ app.use(express.static(path.join(__dirname, 'public'))); // for css
 
 app.use('/upload', express.static(path.join(__dirname, 'upload')));
 
+// Determine upload directory based on environment
+const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : path.join(__dirname, 'upload');
+
+// Ensure the upload directory exists
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'upload');
