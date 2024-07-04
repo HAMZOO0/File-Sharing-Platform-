@@ -1,6 +1,5 @@
--> https://file-sharing-platform-k37r09qwl-hamzoo0s-projects.vercel.app/
 # File Sharing Platform
-
+Live link :  https://file-sharing-platform-k37r09qwl-hamzoo0s-projects.vercel.app/
 ## Description:
 Welcome to the File Sharing Platform! This project is a lightweight, user-friendly web application designed to simplify the process of uploading and sharing files. Built using Node.js, Express, and EJS, it allows users to upload files to the server and instantly generate shareable links for downloading these files. The platform is designed with simplicity in mind, focusing on providing a quick and intuitive file sharing experience.
 
