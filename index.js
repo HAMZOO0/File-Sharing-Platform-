@@ -1,31 +1,22 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
-const os = require('os');
-const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set view engine and views directory
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Determine upload directory based on environment
-const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : path.join(__dirname, 'upload');
-
-// Ensure the upload directory exists
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const uploadDir = path.join(__dirname, 'upload');
+app.use('/upload', express.static(uploadDir));
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadDir);
+        cb(null, 'upload');
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -43,6 +34,7 @@ app.post('/upload', upload.single('fileuploader'), (req, res) => {
         if (!req.file) {
             return res.status(400).send('No file uploaded.');
         }
+        
         const fileName = req.file.filename;
         const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
         res.render('link', { downloadUrl });
@@ -54,8 +46,8 @@ app.post('/upload', upload.single('fileuploader'), (req, res) => {
 
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
-    const fileUrl = path.join(uploadDir, fileName);
-    res.download(fileUrl);
+    const fileUrl = `/upload/${fileName}`;
+    res.render('download', { fileUrl });
 });
 
 app.listen(PORT, () => {
