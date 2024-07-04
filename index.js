@@ -2,20 +2,17 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+require('dotenv').config();
 
-require('dotenv').config(); // Load environment variables
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT ; // Use environment variable or default to 3000
-
+// Set view engine and views directory
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-//When you add express.static, you're telling Express to serve static files (like images, CSS files, or uploaded files) from a specified directory. Here’s what this line of code does:
-
-app.use(express.static(path.join(__dirname, 'public'))); // for css
-
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Determine upload directory based on environment
 const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : path.join(__dirname, 'upload');
@@ -25,23 +22,20 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'upload');
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
+
 const upload = multer({ storage: storage });
 
-// Route to display the upload form
 app.get('/', (req, res) => {
     res.render('upload');
 });
-
-// Route to handle file upload and generate shareable link
 
 app.post('/upload', upload.single('fileuploader'), (req, res) => {
     try {
@@ -57,11 +51,10 @@ app.post('/upload', upload.single('fileuploader'), (req, res) => {
     }
 });
 
-// Route to display the download page
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
-    const fileUrl = `/upload/${fileName}`;
-    res.render('download', { fileUrl });
+    const fileUrl = path.join(uploadDir, fileName);
+    res.download(fileUrl);
 });
 
 app.listen(PORT, () => {
