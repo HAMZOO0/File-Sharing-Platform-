@@ -42,10 +42,19 @@ app.get('/', (req, res) => {
 });
 
 // Route to handle file upload and generate shareable link
+
 app.post('/upload', upload.single('fileuploader'), (req, res) => {
-  const fileName = req.file.filename;
-  const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
-    res.render('link', { downloadUrl });
+    try {
+        if (!req.file) {
+            return res.status(400).send('No file uploaded.');
+        }
+        const fileName = req.file.filename;
+        const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
+        res.render('link', { downloadUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // Route to display the download page
