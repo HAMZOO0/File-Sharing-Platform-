@@ -1,47 +1,55 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
-require('dotenv').config(); // Load environment variables
+require('dotenv').config();
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT ; // Use environment variable or default to 3000
-
+// Set view engine and views directory
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-//When you add express.static, you're telling Express to serve static files (like images, CSS files, or uploaded files) from a specified directory. Here’s what this line of code does:
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'public'))); // for css
-
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
-
+// Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'upload');
+        cb(null, 'upload'); // Ensure this directory exists
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
+
 const upload = multer({ storage: storage });
 
-// Route to display the upload form
+// Render upload form
 app.get('/', (req, res) => {
-    res.render('upload');
+    res.render('upload'); // Ensure upload.ejs exists
 });
 
-// Route to handle file upload and generate shareable link
+// Handle file upload
 app.post('/upload', upload.single('fileuploader'), (req, res) => {
-  const fileName = req.file.filename;
-  const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
-    res.render('link', { downloadUrl });
+    try {
+        if (!req.file) {
+            return res.status(400).send('No file uploaded.');
+        }
+        const fileName = req.file.filename;
+        const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
+        res.render('link', { downloadUrl }); // Ensure link.ejs exists
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
-// Route to display the download page
+// Render file download link
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
     const fileUrl = `/upload/${fileName}`;
-    res.render('download', { fileUrl });
+    res.render('download', { fileUrl }); // Ensure download.ejs exists
 });
 
 app.listen(PORT, () => {
