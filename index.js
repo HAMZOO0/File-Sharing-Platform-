@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
+const os = require('os');
 require('dotenv').config();
 
 const app = express();
@@ -13,10 +14,12 @@ app.set('views', path.join(__dirname, 'views'));
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configure multer storage
+// Determine upload directory based on environment
+const uploadDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : 'upload';
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'upload'); // Ensure this directory exists
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -25,12 +28,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Render upload form
 app.get('/', (req, res) => {
-    res.render('upload'); // Ensure upload.ejs exists
+    res.render('upload');
 });
 
-// Handle file upload
 app.post('/upload', upload.single('fileuploader'), (req, res) => {
     try {
         if (!req.file) {
@@ -38,18 +39,17 @@ app.post('/upload', upload.single('fileuploader'), (req, res) => {
         }
         const fileName = req.file.filename;
         const downloadUrl = `${req.protocol}://${req.get('host')}/download/${fileName}`;
-        res.render('link', { downloadUrl }); // Ensure link.ejs exists
+        res.render('link', { downloadUrl });
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
     }
 });
 
-// Render file download link
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
-    const fileUrl = `/upload/${fileName}`;
-    res.render('download', { fileUrl }); // Ensure download.ejs exists
+    const fileUrl = `${uploadDir}/${fileName}`;
+    res.download(fileUrl);
 });
 
 app.listen(PORT, () => {
