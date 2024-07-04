@@ -4,6 +4,7 @@
   "description": "file sharong platform - full stack project ",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hamza",
