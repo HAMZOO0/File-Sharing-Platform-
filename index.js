@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT ; // Use environment variable or default to 3000
 
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 //When you add express.static, you're telling Express to serve static files (like images, CSS files, or uploaded files) from a specified directory. Here’s what this line of code does:
 
