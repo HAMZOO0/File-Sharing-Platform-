@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
+const fs = require('fs');
+
 require('dotenv').config(); // Load environment variables
 const app = express();
 
